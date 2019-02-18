@@ -96,8 +96,6 @@ bool dynamic_memleak() {
 	//along with only way to free the MY_SIZE ints we just allocated
 	//the new new int[MY_SIZE] allocates 10 ints on the heap p points to them
 	int *p = new int[MY_SIZE];
-	if (!p)
-		return false;		//if cannot allocate new returns a 0
 
 	return 0;  				//Exiting without freeing the allocated memory
 							//no dangling pointer, just undeleted memory
@@ -105,8 +103,6 @@ bool dynamic_memleak() {
 
 bool danglingPointer() {
 	int *p = new int[MY_SIZE];
-	if (!p)
-		return false;
 
 	int *p2 = p;
 
@@ -117,7 +113,6 @@ bool danglingPointer() {
 	}
 
 	//what about p2?
-
 
 	return 0;
 }
@@ -133,17 +128,21 @@ bool dynamic_good() {
 
 	//lets take a look at the memory
 	for (int j  = 0; j < MY_SIZE; ++j) {
-		cout<<(*pStack+j)<<" ";
+		cout<<*(pStack+j)<<" ";
 	}
 	cout<<std::endl;
 
 	//HEAP BASED
 	int *pHeap = new int[MY_SIZE];
-	if (!pHeap)
-		return false;	//if cannot allocate new returns a 0
 
-	//set to 0, should only bother during debug builds, lets you start with a baseline
-	memset(pHeap, 0, (MY_SIZE) * sizeof(int));
+	//set each byte to 1, should only bother during debug builds and generally set=0
+	//because thats the EOL char for strings, lets you start with a baseline
+	memset(pHeap, 1, (MY_SIZE) * sizeof(int));
+
+	//set each integer (4 bytes) to 1
+	for (int j  = 0; j < MY_SIZE; ++j) {
+			*(pHeap+j)=1;
+		}
 
 	cout<<"\nIn dynamic_good, dynamic array contains: ";
 
